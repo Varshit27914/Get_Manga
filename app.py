@@ -16,15 +16,30 @@ def download():
     data = request.get_json()
     url = data['url']
     headers = {'User-Agent': 'Mozilla/5.0'}
-    
+
     try:
         res = requests.get(url, headers=headers)
         soup = BeautifulSoup(res.content, 'html.parser')
-        images = soup.select('img[src*="https://"]')
 
+        domain = url.split("/")[2]
+        img_tags = []
+
+        if "mangakakalot" in domain:
+            # Mangakakalot-specific container
+            container = soup.find('div', class_='container-chapter-reader')
+            if container:
+                img_tags = container.find_all('img')
+
+        elif "mangabuddy" in domain:
+            # Mangabuddy-specific container
+            container = soup.find('div', class_='reading-content')
+            if container:
+                img_tags = container.find_all('img')
+
+        # Collect image URLs
         img_urls = []
-        for img in images:
-            src = img.get('src')
+        for img in img_tags:
+            src = img.get('src') or img.get('data-src')
             if src and ('.jpg' in src or '.png' in src):
                 img_urls.append(src)
 
@@ -45,9 +60,8 @@ def download():
         pdf.output(pdf_file.name)
 
         return send_file(pdf_file.name, as_attachment=True, download_name='manga.pdf')
-    
+
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
 if __name__ == '__main__':
     app.run(debug=True)
