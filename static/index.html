@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manga to PDF</title>
+</head>
+<body>
+  <h2>Manga Chapter to PDF</h2>
+  <form id="mangaForm">
+    <input type="text" id="mangaUrl" placeholder="Paste manga chapter URL" required />
+    <button type="submit">Download PDF</button>
+  </form>
+  <p id="status"></p>
+
+  <script>
+    document.getElementById("mangaForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+      const url = document.getElementById("mangaUrl").value;
+      document.getElementById("status").innerText = "Processing...";
+
+      const res = await fetch('/download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url })
+      });
+
+      if (res.ok) {
+        const blob = await res.blob();
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'manga.pdf';
+        link.click();
+        document.getElementById("status").innerText = "Download ready.";
+      } else {
+        document.getElementById("status").innerText = "Failed to generate PDF.";
+      }
+    });
+  </script>
+</body>
+</html>
