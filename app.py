@@ -6,6 +6,10 @@ import os
 import tempfile
 
 app = Flask(__name__, static_folder='static')
+@app.route('/')
+def home():
+    return send_from_directory('static', 'index.html')
+
 
 @app.route('/download', methods=['POST'])
 def download():
