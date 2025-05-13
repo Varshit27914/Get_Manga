@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Manga to PDF</title>
+  <title>Manga Downloader</title>
 </head>
 <body>
-  <h2>Manga Chapter to PDF</h2>
+  <h2>Manga to PDF</h2>
   <form id="mangaForm">
     <input type="text" id="mangaUrl" placeholder="Paste manga chapter URL" required />
     <button type="submit">Download PDF</button>
@@ -29,9 +29,10 @@
         link.href = URL.createObjectURL(blob);
         link.download = 'manga.pdf';
         link.click();
-        document.getElementById("status").innerText = "Download ready.";
+        document.getElementById("status").innerText = "Download complete.";
       } else {
-        document.getElementById("status").innerText = "Failed to generate PDF.";
+        const err = await res.json();
+        document.getElementById("status").innerText = "Error: " + err.error;
       }
     });
   </script>
